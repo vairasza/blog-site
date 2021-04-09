@@ -81,12 +81,13 @@ export default function PostLayout({
             ))}
           </ul>
         </article>
+        {/*
         <footer>
           <div className={"social-list"}>
             <SocialList />
           </div>
           <Copyright />
-        </footer>
+            </footer>*/}
       </div>
       <style jsx>
         {`
