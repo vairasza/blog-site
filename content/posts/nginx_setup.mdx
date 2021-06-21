@@ -1,0 +1,190 @@
+---
+slug: nginx_setup
+title: Setup Nginx on Amazon Linux with TLS Certificate
+date: 2021-06-21
+author: vairasza
+tags:
+  - document
+---
+So, I have a small EC2 instance running at AWS where i am planning to deploy my upcoming applications. So iptables and webserver need a proper setup, before letting applications like authentication run.
+
+## Prerequisites
+
+You must own or control a registered domain that you wish to use the certificate with. You can buy a new domain on AWS Route 53. Lets Encrypt requires that you have a DNS that points at your server ip address. Keep in mind that both www.example.com and example.com should point at the IP.
+
+## Nginx
+
+Nginx is a web server and a reverse proxy server for HTTP/HTTPS and more. It handles TLS encryption/decryption for you, provides caching mechanisms for TLS connections, allows you to proxy paths to different location on your server or even external. Like *https://app.firecat.red/trumpbot* can point to a docker container on your server - nginx just proxies to *http://localhost:7777*. You can also set up a rate limiter to avoid ddosing as well as gziping data. There is a lot more you can do with the free version of nginx like load balancing.
+
+## Change Iptable
+
+First, open the Security Group for the corresponding EC2 instance which is accessible through your EC2 dashboard. Here you have to chance the "Inbound Rules". These are the ports where someone from the internet can access your server.
+
+![ec2 instance security group inbound rules](/images/screenshot-2021-06-21-at-21.08.00.png)
+
+Per default, only HTTP on port 80 and SSH on port 22 is available for a new instance. Since we want to use TLS on the webserver to have a secure connection, we must add another rule with the type HTTPS (port 443).
+
+## Installing Updates
+
+Next we use SSH to login to the EC2 instance. You can use the webbrowser terminal which you can start from EC2 dashboard, or you a regular terminal. Keep in mind that you need your .pem file to authenticate yourself with the server.
+
+```shell
+$ ssh -i /path/to/pem/file ec2-user@app.firecat.red
+```
+
+On the first login to your EC2 instance or after a few days, the package manager for your OS might have updates. Normally a message is printed out when you login. But you can also check for updates manually. *yum* might not work, it depends on the linux OS you are using.
+
+```shell
+$ yum check-update
+```
+
+Next, install the updates. Herefore root rights are required, so write sudo first. -y tells the CLI that you are auto-accepting mid update if you really want to make these updates. Additionally reboot your linux server if a kernel update was installed:
+
+```shell
+$ sudo yum update -y
+$ sudo reboot
+```
+
+## Installing Nginx
+
+As soon as your instance is back alive, ssh back into it and install nginx. Keep in mind that your Linus OS might use a different package manager than Amazon Linux. 
+
+```shell
+$ sudo yum install nginx
+```
+
+After that you can start Nginx since it does not start automatically. Systemctl is a managed service which is a key responsibility for system admins. It is similar to commands like systemd and service. It lets you start/stop/status/restart services like SSH and Nginx. 
+
+```shell
+$ sudo systemctl start nginx
+```
+
+After you have started Nginx, you can check if it is already working with systemctl. By default you can find a basic configuration in */etc/nginx/nginx.conf* which accepts incoming HTTP requests on port 80. If the status of Nginx is stopped or an error has accured, you might have to check your iptables/security group if port 80 is open.
+
+```shell
+$ sudo systemctl status nginx
+```
+
+Systemctl shows you a result like this:
+
+![systemctl nginx status](/images/screenshot-2021-06-21-at-22.33.58.png)
+
+## Installing Certbot
+
+Next we will install certbot which will automatically issue a TLS certificate with a public and a private key, change the nginx configuration so that it can accept connections on port 443, and renew your certificate.
+
+First we must install the necessary packages: we require certbot and certbox-nginx - this is a plugin which configurates nginx automatically and makes it super easy.
+
+```shell
+$ sudo yum install certbot certbot-nginx
+```
+
+Before we execute that certbot command, we have to make a little change in the nginx.conf file. Therefore we use vi (or any other installed editor on your server) to change the server\_name \_ to *www.app.firecat.red app.firecat.red* or whatever your server name is. This tells letsencrypt/certbot that you are the owner of the domain and the server.
+
+```shell
+$ sudo vi /etc/nginx/nginx.conf
+```
+
+```nginx
+...
+http {
+
+  server {
+        server_name www.app.firecat.red app.firecat.red;
+
+        listen 80;
+        listen [::]:80;
+        ...
+  }
+  ...
+}
+```
+
+Save these changes and check if the changes to the configuration file are valid. Restart if these changes are ok, otherwise have a second look at your changes. Maybe you missed semicolon. :D Nginx should back within seconds after restarting. Check if necessary.
+
+```shell
+$ sudo nginx -t
+$ sudo systemctl restart nginx
+$ sudo systemctl status nginx
+```
+
+With port 80 and 443 open, your dns pointing to your server ip and server_name changes in nginx.conf, you can finally issue your certificate with certbot. Name your domain with and without www. You are asked to register at letsencrypt with your email and you have to accept the ToS. Note: i have only registered *app.firecat.red* on my first run, so the certifcate had to be expanded.
+
+```shell
+$ sudo certbot --nginx -d app.firecat.red -d www.app.firecat.red
+
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator nginx, Installer nginx
+Enter email address (used for urgent renewal and security notices)
+ (Enter 'c' to cancel): michael.bierschneider@mailbox.org
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Please read the Terms of Service at
+https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf. You must
+agree in order to register with the ACME server. Do you agree?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+(Y)es/(N)o: Y
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Would you be willing, once your first certificate is successfully issued, to
+share your email address with the Electronic Frontier Foundation, a founding
+partner of the Let's Encrypt project and the non-profit organization that
+develops Certbot? We'd like to send you email about our work encrypting the web,
+EFF news, campaigns, and ways to support digital freedom.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+(Y)es/(N)o: N
+Account registered.
+Requesting a certificate for app.firecat.red
+Performing the following challenges:
+http-01 challenge for app.firecat.red
+Waiting for verification...
+Cleaning up challenges
+Deploying Certificate to VirtualHost /etc/nginx/nginx.conf
+Redirecting all traffic on port 80 to ssl in /etc/nginx/nginx.conf
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Congratulations! You have successfully enabled https://app.firecat.red
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/app.firecat.red/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/app.firecat.red/privkey.pem
+   Your certificate will expire on 2021-09-18. To obtain a new or
+   tweaked version of this certificate in the future, simply run
+   certbot again with the "certonly" option. To non-interactively
+   renew *all* of your certificates, run "certbot renew"
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+```
+
+Ok. That is it. If you try any request to your nginx webserver with HTTPS protocol, you should get an answer with status 200.
+
+```shell
+$ curl -v https://app.firecat.red
+```
+
+## Renew your certificate
+
+Your certificate should be valid for 90 days. As it is a tedious job to issue a new certificate every few months, there is also the option to make this automatically with cronjob. Add a new entry to crontab that looks like this:
+
+```shell
+$ sudo vi /etc/crontab
+```
+
+```shell
+10 4 * * * root /usr/bin/certbot --quiet renew --post-hook "systemctl restart nginx"
+```
+
+This cronjob executes every day at 04:10 server time - you can basically use any time you like - and checks if 60 days have already passed. This is the time when certbot renews your certificate quietly. After that it also restarts your nginx service. Otherwise nothing happens. You can also tryout if the renew process is working and if your cronjob was executed.
+
+```
+$ sudo /usr/bin/certbot --dry-run renew
+
+$ sudo cat /var/log/cron
+```
+
+End.
