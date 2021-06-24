@@ -1,24 +1,23 @@
 import React from "react";
-import { PostContent } from "../lib/posts";
-import PostItem from "./PostItem";
-import TagLink from "./TagLink";
 import Pagination from "./Pagination";
+import AppsItem from "./AppsItem";
+import { AppsContent } from "../lib/apps";
 
 type Props = {
-  posts: PostContent[];
+  apps: AppsContent[];
   pagination: {
     current: number;
     pages: number;
   };
 };
-export default function PostList({ posts, pagination }: Props) {
+export default function AppsList({ apps, pagination }: Props) {  
   return (
     <div className={"container"}>
-      <div className={"posts"}>
-        <ul className={"post-list"}>
-          {posts.map((it, i) => (
+      <div className={"apps"}>
+        <ul className={"app-list"}>
+          {apps.map((it, i) => (
             <li key={i}>
-              <PostItem post={it} />
+              <AppsItem app={it} />
             </li>
           ))}
         </ul>
@@ -26,8 +25,8 @@ export default function PostList({ posts, pagination }: Props) {
           current={pagination.current}
           pages={pagination.pages}
           link={{
-            href: (page) => (page === 1 ? "/posts" : "/posts/page/[page]"),
-            as: (page) => (page === 1 ? null : "/posts/page/" + page),
+            href: (page) => (page === 1 ? "/apps" : "/apps/page/[page]"),
+            as: (page) => (page === 1 ? null : "/apps/page/" + page),
           }}
         />
       </div>

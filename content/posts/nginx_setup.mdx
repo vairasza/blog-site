@@ -3,8 +3,6 @@ slug: nginx_setup
 title: Setup Nginx on Amazon Linux with TLS Certificate
 date: 2021-06-21
 author: vairasza
-tags:
-  - document
 ---
 So, I have a small EC2 instance running at AWS where i am planning to deploy my upcoming applications. So iptables and webserver need a proper setup, before letting applications like authentication run.
 
@@ -116,7 +114,7 @@ $ sudo certbot --nginx -d app.firecat.red -d www.app.firecat.red
 Saving debug log to /var/log/letsencrypt/letsencrypt.log
 Plugins selected: Authenticator nginx, Installer nginx
 Enter email address (used for urgent renewal and security notices)
- (Enter 'c' to cancel): michael.bierschneider@mailbox.org
+ (Enter 'c' to cancel): your@mail.com
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Please read the Terms of Service at

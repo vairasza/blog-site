@@ -11,16 +11,13 @@ type Props = {
   date: Date;
   author?: string;
   image?: string;
-  description?: string;
 };
 export default function JsonLdMeta({
   url,
   title,
-  keywords,
   date,
   author,
   image,
-  description,
 }: Props) {
   return (
     <Head>
@@ -30,11 +27,9 @@ export default function JsonLdMeta({
           "@type": "BlogPosting",
           mainEntityOfPage: config.base_url + url,
           headline: title,
-          keywords: keywords ? undefined : keywords.join(","),
           datePublished: formatISO(date),
           author: author,
           image: image,
-          description: description,
         })}
       />
     </Head>

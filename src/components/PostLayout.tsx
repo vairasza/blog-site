@@ -8,16 +8,12 @@ import BasicMeta from "./meta/BasicMeta";
 import JsonLdMeta from "./meta/JsonLdMeta";
 import OpenGraphMeta from "./meta/OpenGraphMeta";
 import TwitterCardMeta from "./meta/TwitterCardMeta";
-import { SocialList } from "./SocialList";
-import TagButton from "./TagButton";
 import { getAuthor } from "../lib/authors";
-import { getTag } from "../lib/tags";
 
 type Props = {
   title: string;
   date: Date;
   slug: string;
-  tags: string[];
   author: string;
   description?: string;
   children: React.ReactNode;
@@ -27,18 +23,15 @@ export default function PostLayout({
   date,
   slug,
   author,
-  tags,
   description = "",
   children,
 }: Props) {
-  const keywords = tags.map(it => getTag(it).name);
   const authorName = getAuthor(author).name;
   return (
     <Layout>
       <BasicMeta
         url={`/posts/${slug}`}
         title={title}
-        keywords={keywords}
         description={description}
       />
       <TwitterCardMeta
@@ -54,10 +47,8 @@ export default function PostLayout({
       <JsonLdMeta
         url={`/posts/${slug}`}
         title={title}
-        keywords={keywords}
         date={date}
         author={authorName}
-        description={description}
       />
       <div className={"container"}>
         <article>
@@ -73,21 +64,8 @@ export default function PostLayout({
             </div>
           </header>
           <div className={styles.content}>{children}</div>
-          <ul className={"tag-list"}>
-            {tags.map((it, i) => (
-              <li key={i}>
-                <TagButton tag={getTag(it)} />
-              </li>
-            ))}
-          </ul>
+
         </article>
-        {/*
-        <footer>
-          <div className={"social-list"}>
-            <SocialList />
-          </div>
-          <Copyright />
-            </footer>*/}
       </div>
       <style jsx>
         {`

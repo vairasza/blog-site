@@ -3,6 +3,7 @@
   "site_title": "Firecat | Aspiring Web Developer",
   "site_description": "I am an aspiring web developer that likes JavaScript and Backend Technology.",
   "posts_per_page": 10,
+  "apps_per_page": 6,
   "site_keywords": [
     {
       "keyword": "Portfolio"
