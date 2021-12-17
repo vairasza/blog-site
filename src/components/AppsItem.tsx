@@ -10,7 +10,7 @@ export default function AppItem({ app }: Props) {
     <div className="appItem">
       <div className="flexHeader">
         <h2>{app.title}</h2>
-        <a href={app.liveLink}><Website width={24} heigth={24} altText={"Icon that leads to live version"}/></a>
+        <a href={app.liveLink} target="_blank" rel="noopener" title="Deployed Version"><Website width={24} heigth={24} altText={"Icon that leads to live version"}/></a>
         <a 
           className="flexappItem"
           title="GitHub"
