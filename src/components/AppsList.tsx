@@ -10,7 +10,7 @@ type Props = {
     pages: number;
   };
 };
-export default function AppsList({ apps, pagination }: Props) {  
+export default function AppsList({ apps, pagination }: Props) { 
   return (
     <div className={"container"}>
       <div className={"apps"}>
@@ -36,20 +36,20 @@ export default function AppsList({ apps, pagination }: Props) {
           margin: 0 auto;
           max-width: 1200px;
           width: 100%;
-          padding: 0 1.5rem;
         }
         ul {
           margin: 0;
+          padding: 0;
         }
         li {
           list-style: none;
+          margin-bottom: 15px;
         }
         .posts {
           display: flex;
           flex-direction: column;
           flex: 1 1 auto;
-          padding-right: 10%;
-          padding-left: 10%;
+
         }
         .posts li {
           margin-bottom: 1.5rem;

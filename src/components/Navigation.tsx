@@ -17,10 +17,10 @@ export default function Navigation() {
             </Link>
           </li>
           <li>
-            <Link href="/posts/page/1">
+            <Link href="/posts">
               <a
                 className={
-                  router.pathname.startsWith("/posts/page/1") ? "active" : null
+                  router.pathname.startsWith("/posts") ? "active" : null
                 }
               >
                 blog
@@ -28,10 +28,10 @@ export default function Navigation() {
             </Link>
           </li>
           <li>
-            <Link href="/apps/page/1">
+            <Link href="/apps">
               <a
                 className={
-                  router.pathname.startsWith("/apps/page/1") ? "active" : null
+                  router.pathname.startsWith("/apps") ? "active" : null
                 }
               >
                 apps

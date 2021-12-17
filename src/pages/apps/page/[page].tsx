@@ -15,7 +15,7 @@ type Props = {
     pages: number;
   };
 };
-export default function Page({ apps, pagination, page }: Props) {  
+export default function Page({ apps, pagination, page }: Props) { 
   const url = `/apps/page/${page}`;
   const title = "All apps";
   return (

@@ -12,8 +12,9 @@ export default function Index() {
       <div className="container">
         <div>
           <p>Hello <span className="fancy">&</span> Welcome on my Website</p>
-          <h1>&rarr; Michael<span className="fancy">&#123; Firecat &#125;</span>Bierschneider <span className="fancy">( )</span></h1>
-          <p>I am a senior media informatics student at the university of Regensburg and an anspiring web developer who likes Javascript and Backend Technology.</p>
+          <h1>( ) =&gt; <span className="fancy"> &#123; vairasza &#125; </span>( )</h1>
+          <p>I am a master's media informatics student at the University of Regensburg and an anspiring web developer.</p>
+          <p>I like JavaScript, Rust and Backend Technology.</p>
 
         </div>
       </div>
@@ -25,11 +26,12 @@ export default function Index() {
           flex: 1 1 auto;
           padding: 0 1.5rem;
           max-width: 50rem;
+          z-index: 2;
         }
         h1 {
-          font-size: 2.5rem;
+          font-size: 3rem;
           margin: 0;
-          font-weight: 500;
+          font-weight: 300;
         }
         h2 {
           font-size: 1.75rem;
@@ -37,7 +39,7 @@ export default function Index() {
           line-height: 1.25;
         }
         .fancy {
-          color: #ff6700;
+          color: #E60000;
           font-weight: 10;
         }
         .handle {
@@ -47,14 +49,6 @@ export default function Index() {
           letter-spacing: 0.05em;
         }
 
-        @media (min-width: 769px) {
-          h1 {
-            font-size: 3rem;
-          }
-          h2 {
-            font-size: 2.25rem;
-          }
-        }
       `}</style>
     </Layout>
   );

@@ -1,18 +1,4 @@
 module.exports = ({
-  async redirects() {
-    return [
-      {
-        source: '/apps',
-        destination: '/apps/page/1',
-        permanent: true,
-      },
-      {
-        source: '/posts',
-        destination: '/posts/page/1',
-        permanent: true,
-      }
-    ]
-  },
   pageExtensions: ["tsx"],
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     config.module.rules.push(
